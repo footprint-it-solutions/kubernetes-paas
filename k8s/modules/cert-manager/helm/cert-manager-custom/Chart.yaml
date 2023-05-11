@@ -1,0 +1,7 @@
+apiVersion: v2
+name: cert-manager-custom
+description: A Helm chart for installing the HelloWorld example for testing istio mesh connectivity
+
+type: application
+version: 0.1.0
+appVersion: "v1.0.0"

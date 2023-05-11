@@ -1,0 +1,7 @@
+apiVersion: v2
+name: k8s-auditor
+description: Deploys the k8s auditor
+
+type: application
+version: 0.0.2
+appVersion: "v3.0.0"

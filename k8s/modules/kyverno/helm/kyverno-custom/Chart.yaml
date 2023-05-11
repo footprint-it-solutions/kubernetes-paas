@@ -1,0 +1,12 @@
+apiVersion: v2
+name: kyverno-custom
+description: A Helm chart for installing Kyverno with custom policies
+
+type: application
+version: 0.1.0
+appVersion: "v1.3.6"
+
+dependencies:
+- name: kyverno
+  version: "v1.3.6"
+  repository: "https://kyverno.github.io/kyverno/"
