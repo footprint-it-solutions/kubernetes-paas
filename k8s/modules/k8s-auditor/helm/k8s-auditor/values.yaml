@@ -1,0 +1,13 @@
+---
+es_basic_auth: false
+es_host: elasticsearch-coord
+es_port: 9200
+es_protocol: http
+image: environment-mgmt/k8s-auditor:latest
+resources:
+  limits:
+    cpu: 2
+    memory: 512Mi
+  requests:
+    cpu: 500m
+    memory: 256Mi

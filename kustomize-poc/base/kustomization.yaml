@@ -1,0 +1,11 @@
+namePrefix: prod-
+bases:
+- ../../
+commonLabels:
+  foo: bar
+resources:
+- deployment.yaml
+commonAnnotations:
+  another: world
+patches:
+- image.yaml

@@ -1,0 +1,13 @@
+grafana:
+  dashboards:
+    default:
+      istio-extension-dashboard:
+        url: https://fpm-grafana-dashboards-411245.s3-eu-west-1.amazonaws.com/istio-extension-dashboard.json
+      istio-mesh-dashboard:
+        url: https://fpm-grafana-dashboards-411245.s3-eu-west-1.amazonaws.com/istio-mesh-dashboard.json
+      istio-workload-dashboard:
+        url: https://fpm-grafana-dashboards-411245.s3-eu-west-1.amazonaws.com/istio-workload-dashboard.json
+      istio-service-dashboard:
+        url: https://fpm-grafana-dashboards-411245.s3-eu-west-1.amazonaws.com/istio-service-dashboard.json
+      kyverno-dashboard:
+        url: https://fpm-grafana-dashboards-411245.s3-eu-west-1.amazonaws.com/kyverno-dashboard.json

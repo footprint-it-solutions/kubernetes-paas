@@ -1,0 +1,20 @@
+grafana:
+  image:
+  %{ if custom_docker_registry != "" }
+    repository: ${custom_docker_registry}/grafana/grafana
+  %{ else }
+    repository: grafana/grafana
+  %{ endif }
+    tag: 8.0.1
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: istio
+      %{ if lb_dns_name != "" }
+      external-dns.alpha.kubernetes.io/target: ${lb_dns_name}
+      %{ endif }
+      cert-manager.io/issuer: vault-issuer
+      cert-manager.io/issuer-kind: ClusterIssuer
+    fullnameOverride: grafana
+    hosts:
+      - grafana.${domain}

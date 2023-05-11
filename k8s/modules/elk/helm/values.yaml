@@ -1,0 +1,147 @@
+elasticsearch-coord:
+%{ if custom_docker_registry != "" }
+  image: ${custom_docker_registry}/elasticsearch/elasticsearch-oss
+%{ else }
+  image: docker.elastic.co/elasticsearch/elasticsearch-oss
+%{ endif }
+  imageTag: ${es_version}
+  ingress:
+    # Ingress values syntax changes in future releases
+    annotations:
+      cert-manager.io/issuer: vault-issuer
+      cert-manager.io/issuer-kind: ClusterIssuer
+%{ if lb_dns_name != "" }
+      external-dns.alpha.kubernetes.io/target: ${lb_dns_name}
+%{ endif }
+      kubernetes.io/ingress.class: istio
+    enabled: true
+    hosts:
+      - es.${domain}
+    # The path requires a wildcard since the helm chart does not expose the pathType,
+    # which would otherwise need to be set to Prefix
+    path: /*
+    tls:
+      - secretName: elasticsearch-tls
+        hosts:
+          - es.${domain}
+  nodeGroup: coord
+  replicas: 1
+  roles:
+    data: "false"
+    ingest: "false"
+    master: "false"
+  volumeClaimTemplate:
+    accessModes: [ "ReadWriteOnce" ]
+    resources:
+      requests:
+        storage: 2Gi
+
+elasticsearch-data:
+%{ if custom_docker_registry != "" }
+  image: ${custom_docker_registry}/elasticsearch/elasticsearch-oss
+%{ else }
+  image: docker.elastic.co/elasticsearch/elasticsearch-oss
+%{ endif }
+  imageTag: ${es_version}
+  nodeGroup: data
+  replicas: 2
+  roles:
+    data: "true"
+    ingest: "false"
+    master: "false"
+  volumeClaimTemplate:
+    accessModes: [ "ReadWriteOnce" ]
+    resources:
+      requests:
+        storage: 5Gi
+
+elasticsearch-master:
+%{ if custom_docker_registry != "" }
+  image: ${custom_docker_registry}/elasticsearch/elasticsearch-oss
+%{ else }
+  image: docker.elastic.co/elasticsearch/elasticsearch-oss
+%{ endif }
+  imageTag: ${es_version}
+  nodeGroup: master
+  replicas: 1
+  roles:
+    data: "false"
+    ingest: "false"
+    master: "true"
+  volumeClaimTemplate:
+    accessModes: [ "ReadWriteOnce" ]
+    resources:
+      requests:
+        storage: 2Gi
+
+kibana:
+  fullnameOverride: kibana
+%{ if custom_docker_registry != "" }
+  image: ${custom_docker_registry}/kibana/kibana-oss
+%{ else }
+  image: docker.elastic.co/kibana/kibana-oss
+%{ endif }
+%{ if kibana_version != "" }
+  imageTag: ${kibana_version}
+%{ else }
+  imageTag: ${es_version}
+%{ endif }
+  ingress:
+    # Ingress values syntax changes in future releases
+    annotations:
+      cert-manager.io/issuer: vault-issuer
+      cert-manager.io/issuer-kind: ClusterIssuer
+%{ if lb_dns_name != "" }
+      external-dns.alpha.kubernetes.io/target: ${lb_dns_name}
+%{ endif }
+      kubernetes.io/ingress.class: istio
+    enabled: true
+    hosts:
+      - kibana.${domain}
+    # The path requires a wildcard since the helm chart does not expose the pathType,
+    # which would otherwise need to be set to Prefix
+    path: /*
+    tls:
+      - secretName: kibana-tls
+        hosts:
+          - kibana.${domain}
+
+logstash:
+  fullnameOverride: logstash
+%{ if custom_docker_registry != "" }
+  image: ${custom_docker_registry}/logstash/logstash-oss
+%{ else }
+  image: docker.elastic.co/logstash/logstash-oss
+%{ endif }
+%{ if logstash_version != "" }
+  imageTag: ${logstash_version}
+%{ else }
+  imageTag: ${es_version}
+%{ endif }
+  logstashPipeline:
+    logstash.conf: |
+      input {
+        beats {
+          port => 5044
+        }
+      }
+
+      output {
+        elasticsearch {
+          hosts => ["http://elasticsearch-coord:9200"]
+          index => "%%{[@metadata][beat]}-%%{[@metadata][version]}"
+        }
+      }
+
+  service:
+    annotations: {}
+    type: ClusterIP
+    ports:
+      - name: beats
+        port: 5044
+        protocol: TCP
+        targetPort: 5044
+      - name: http
+        port: 9600
+        protocol: TCP
+        targetPort: 9600

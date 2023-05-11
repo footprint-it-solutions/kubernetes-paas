@@ -1,0 +1,52 @@
+operator:
+  image:
+%{ if custom_docker_registry != "" }
+    registry: ${custom_docker_registry}
+    repository: bitnami/prometheus-operator
+%{ else }
+    registry: docker.io
+    repository: bitnami/prometheus-operator
+%{ endif }
+    tag: 0.48.1-debian-10-r0
+
+prometheus:
+  image:
+%{ if custom_docker_registry != "" }
+    registry: ${custom_docker_registry}
+    repository: bitnami/prometheus
+%{ else }
+    registry: docker.io
+    repository: bitnami/prometheus
+%{ endif }
+    tag: 2.27.1-debian-10-r13
+
+alertmanager:
+  image:
+%{ if custom_docker_registry != "" }
+    registry: ${custom_docker_registry}
+    repository: bitnami/alertmanager
+%{ else }
+    registry: docker.io
+    repository: bitnami/alertmanager
+%{ endif }
+    tag: 0.22.1-debian-10-r5
+
+node-exporter:
+  image:
+%{ if custom_docker_registry != "" }
+      registry: ${custom_docker_registry}
+%{ else }
+      registry: docker.io
+%{ endif }
+      repository: bitnami/node-exporter
+      tag: 1.1.2-debian-10-r64
+
+kube-state-metrics:
+  image:
+%{ if custom_docker_registry != "" }
+    registry: ${custom_docker_registry}
+%{ else }
+    registry: docker.io
+%{ endif }
+    repository: bitnami/kube-state-metrics
+    tag: 2.0.0-debian-10-r28

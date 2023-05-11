@@ -1,0 +1,50 @@
+image:
+%{ if custom_docker_registry != "" }
+  registry: ${custom_docker_registry}
+%{ endif }
+  repository: bitnami/external-dns
+  tag: 0.8.0-debian-10-r26
+
+fullnameOverride: "external-dns"
+
+%{ if aws_account != "" }
+provider: aws
+aws:
+  zoneType: "public"
+  region: "${region}"
+%{ endif }
+%{ if gcp_project != "" }
+provider: google
+google:
+  project: "${gcp_project}"
+%{ endif }
+
+domainFilters: ${domainFilters}
+
+serviceAccount:
+  annotations:
+%{~ if aws_account != "" }
+    eks.amazonaws.com/role-arn: arn:aws:iam::${aws_account}:role/${cluster_name}-externaldns
+%{~ endif }
+%{~ if gcp_project != "" }
+    iam.gke.io/gcp-service-account: external-dns@${gcp_project}.iam.gserviceaccount.com
+%{~ endif }
+
+policy: sync
+
+txtOwnerId: ${cluster_name}
+
+sources:
+  - ingress
+  - istio-gateway
+  - istio-virtualservice
+
+logLevel: debug
+
+resources:
+  limits:
+    cpu: 50m
+    memory: 50Mi
+  requests:
+    memory: 50Mi
+    cpu: 10m

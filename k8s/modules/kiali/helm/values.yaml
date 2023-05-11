@@ -1,0 +1,39 @@
+auth:
+  openid: {}
+  openshift: {}
+  strategy: "anonymous"
+
+deployment:
+%{~ if custom_docker_registry != "" }
+  image_name: ${custom_docker_registry}/kiali/kiali
+%{~ else }
+  image_name: quay.io/kiali/kiali
+%{~ endif }
+  image_version: v1.35.0
+  service_annotations:
+    app.kubernetes.io/cluster: ${cluster_name}
+%{~ if length(regexall("int", cluster_name)) > 0 }
+# We only want a standard ingress for the internal cluster
+  override_ingress_yaml:
+    metadata:
+      annotations:
+%{~ if length(regexall("eks", cluster_name)) > 0 }
+        external-dns.alpha.kubernetes.io/target: ${lb_dns_name}
+%{~ endif }
+        kubernetes.io/ingress.class: istio
+    spec:
+      rules:
+      - host: kiali-int.${domain}
+        http:
+          paths:
+          - backend:
+              service:
+                name: kiali-int
+                port:
+                  name: http
+            path: /*
+            pathType: ImplementationSpecific
+fullnameOverride: kiali-int
+%{~ else }
+fullnameOverride: kiali-ext
+%{~ endif }

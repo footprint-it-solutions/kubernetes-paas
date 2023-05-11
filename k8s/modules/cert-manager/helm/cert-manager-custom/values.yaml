@@ -1,0 +1,24 @@
+cluster_name: "${cluster_name}"
+
+image:
+%{ if custom_docker_registry != "" }
+  registry: ${custom_docker_registry}
+%{ endif }
+  repository: jetstack/cert-manager-controller
+  tag: v1.3.1
+
+cainjector:
+  image:
+%{ if custom_docker_registry != "" }
+    registry: ${custom_docker_registry}
+%{ endif }
+    repository: jetstack/cert-manager-cainjector
+    tag: v1.3.1
+
+webhook:
+  image:
+%{ if custom_docker_registry != "" }
+    registry: ${custom_docker_registry}
+%{ endif }
+    repository: jetstack/cert-manager-webhook
+    tag: v1.3.1

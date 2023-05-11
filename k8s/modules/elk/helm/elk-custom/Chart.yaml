@@ -1,0 +1,27 @@
+apiVersion: v2
+name: elk-custom
+description: A Helm chart for installing elasticsearch
+
+type: application
+version: 1.0.0
+appVersion: "7.10.2"
+
+dependencies:
+- name: elasticsearch
+  version: 7.10.2
+  repository: https://helm.elastic.co
+  alias: elasticsearch-coord
+- name: elasticsearch
+  version: 7.10.2
+  repository: https://helm.elastic.co
+  alias: elasticsearch-data
+- name: elasticsearch
+  version: 7.10.2
+  repository: https://helm.elastic.co
+  alias: elasticsearch-master
+- name: logstash
+  version: 7.10.2
+  repository: https://helm.elastic.co
+- name: kibana
+  version: 7.10.2
+  repository: https://helm.elastic.co

@@ -1,0 +1,56 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-auditor
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: k8s-auditor
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: k8s-auditor
+    spec:
+      containers:
+      - name: k8s-auditor
+        env:
+          - name: cluster_name
+            value: {{ required "Value cluster_name is required" .Values.cluster_name }}
+          - name: es_host
+            value: {{ .Values.es_host }}
+          - name: es_port
+            value: {{ .Values.es_port | quote }}
+          - name: es_protocol
+            value: {{ .Values.es_protocol }}
+          - name: es_index_pods
+            value: k8s-pods
+          - name: es_index_configmaps
+            value: k8s-configmaps
+{{ if .Values.es_basic_auth }}
+          - name: es_username
+            valueFrom:
+              secretKeyRef:
+                key: es_username
+                name: k8s-auditor
+          - name: es_password
+            valueFrom:
+              secretKeyRef:
+                key: es_password
+                name: k8s-auditor
+{{ end }}
+          - name: LOG4J_CONFIGURATION_FILE
+            value: lib/{{ .Values.log4j_config_file }}
+          - name: reindex_events
+            value: "false"
+        image: {{ .Values.image }}
+        resources:
+          limits:
+            cpu: {{ .Values.resources.limits.cpu | quote }}
+            memory: {{ .Values.resources.limits.memory }}
+          requests:
+            cpu: {{ .Values.resources.requests.cpu | quote }}
+            memory: {{ .Values.resources.requests.memory }}
+      serviceAccountName: k8s-auditor

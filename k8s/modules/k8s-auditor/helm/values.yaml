@@ -1,0 +1,4 @@
+---
+cluster_name: ${cluster_name}
+image: ${custom_docker_registry}/environment-mgmt/k8s-auditor:3.0.1
+log4j_config_file: log4j2.xml
