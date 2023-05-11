@@ -35,10 +35,7 @@ resource "google_compute_firewall" "ext-lb-health-check" {
 
   network = google_compute_network.ext.name
 
-  source_ranges = [
-    "35.191.0.0/16",
-    "130.211.0.0/22"
-  ]
+  source_ranges = []
 }
 
 resource "google_compute_firewall" "int-lb-health-check" {
@@ -54,10 +51,7 @@ resource "google_compute_firewall" "int-lb-health-check" {
 
   network = google_compute_network.int.name
 
-  source_ranges = [
-    "35.191.0.0/16",
-    "130.211.0.0/22"
-  ]
+  source_ranges = []
 }
 
 # Int VPC
